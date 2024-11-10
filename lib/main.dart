@@ -78,7 +78,7 @@ class _TimeRecorderScreenState extends State<TimeRecorderScreen> {
 
   void copyToClipboard() {
     Clipboard.setData(ClipboardData(text: displayText));
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Copied to Clipboard")));
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Copied to Clipboard")));
   }
 
   String _formatCurrentTime() {
@@ -126,23 +126,39 @@ class _TimeRecorderScreenState extends State<TimeRecorderScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 30.0),
-                    child: Image.asset('assets/two.png', width: 200, height: 200),
+                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                    child: Image.asset('assets/file.png', width: 300, height: 300),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Enter Name',
-                        border: OutlineInputBorder(),
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          userName = value;
-                        });
-                      },
-                    ),
-                  ),
+                 Padding(
+  padding: const EdgeInsets.all(20.0),
+  child: TextField(
+    decoration: InputDecoration(
+      filled: true,
+      fillColor: Colors.black87,  // Dark background color
+      labelText: 'Enter Name',
+      labelStyle: TextStyle(color: Colors.white),  // White label color
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10.0),
+        borderSide: BorderSide(color: Colors.white, width: 2.0),  // White border color
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10.0),
+        borderSide: BorderSide(color: Colors.white, width: 2.0),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10.0),
+        borderSide: BorderSide(color: Colors.blueAccent, width: 2.0),  // Accent color on focus
+      ),
+    ),
+    style: TextStyle(color: Colors.white),  // White text color
+    onChanged: (value) {
+      setState(() {
+        userName = value;
+      });
+    },
+  ),
+),
+
                   Card(
                     color: Colors.teal[700],
                     shape: RoundedRectangleBorder(
@@ -205,7 +221,7 @@ class _TimeRecorderScreenState extends State<TimeRecorderScreen> {
                           ElevatedButton(
                             onPressed: inTimeRecorded ? null : recordInTime,
                             style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -228,7 +244,7 @@ class _TimeRecorderScreenState extends State<TimeRecorderScreen> {
                           ElevatedButton(
                             onPressed: outTimeRecorded ? null : recordOutTime,
                             style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -311,7 +327,7 @@ class _TimeRecorderScreenState extends State<TimeRecorderScreen> {
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text(
                                         record['name']!,
-                                        style: TextStyle(color: Colors.white),
+                                        style: const TextStyle(color: Colors.white),
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
@@ -319,7 +335,7 @@ class _TimeRecorderScreenState extends State<TimeRecorderScreen> {
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text(
                                         record['date']!,
-                                        style: TextStyle(color: Colors.white),
+                                        style: const TextStyle(color: Colors.white),
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
@@ -327,7 +343,7 @@ class _TimeRecorderScreenState extends State<TimeRecorderScreen> {
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text(
                                         record['inTime']!,
-                                        style: TextStyle(color: Colors.white),
+                                        style: const TextStyle(color: Colors.white),
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
@@ -335,7 +351,7 @@ class _TimeRecorderScreenState extends State<TimeRecorderScreen> {
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text(
                                         record['outTime']!,
-                                        style: TextStyle(color: Colors.white),
+                                        style: const TextStyle(color: Colors.white),
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
@@ -348,7 +364,7 @@ class _TimeRecorderScreenState extends State<TimeRecorderScreen> {
                   ],
                   const SizedBox(height: 30),
                   const SizedBox(height: 20),
-                  Text(displayText, style: TextStyle(fontSize: 18)),
+                  Text(displayText, style: const TextStyle(fontSize: 18)),
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: copyToClipboard,
