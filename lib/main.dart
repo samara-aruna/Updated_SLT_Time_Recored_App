@@ -29,6 +29,7 @@ class _TimeRecorderScreenState extends State<TimeRecorderScreen> {
   String? inTime;
   String? outTime;
   String userName = "";
+  String userId ="";
   String displayText = "";
   List<Map<String, String>> records = [];
 
@@ -67,12 +68,13 @@ class _TimeRecorderScreenState extends State<TimeRecorderScreen> {
       'inTime': inTime!,
       'outTime': outTime!,
       'name': userName,
+      'id' : userId,
     });
   }
 
   void updateDisplayText() {
     setState(() {
-      displayText = "Name: $userName\nDate: $currentDate\nIn Time: $inTime\nOut Time: $outTime";
+      displayText = "Name: $userName\nTrainee Id: $userId\n Date: $currentDate\nIn Time: $inTime\nOut Time: $outTime";
     });
   }
 
@@ -97,7 +99,7 @@ class _TimeRecorderScreenState extends State<TimeRecorderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.teal[100],
+      backgroundColor: Colors.teal[500],
       appBar: AppBar(
         title: const Text(
           'Office Time Recorder',
@@ -127,36 +129,70 @@ class _TimeRecorderScreenState extends State<TimeRecorderScreen> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: Image.asset('assets/file.png', width: 300, height: 300),
+                    child: Image.asset('assets/three.png', width: 300, height: 300),
                   ),
                  Padding(
   padding: const EdgeInsets.all(20.0),
-  child: TextField(
-    decoration: InputDecoration(
-      filled: true,
-      fillColor: Colors.black87,  // Dark background color
-      labelText: 'Enter Name',
-      labelStyle: TextStyle(color: Colors.white),  // White label color
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10.0),
-        borderSide: BorderSide(color: Colors.white, width: 2.0),  // White border color
+  child: Column(
+    children: [
+      TextField(
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.black87,  // Dark background color
+          labelText: 'Enter Name',
+          labelStyle: const TextStyle(color: Colors.white),  // White label color
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(color: Colors.white, width: 2.0),  // White border color
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(color: Colors.white, width: 2.0),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(color: Colors.blueAccent, width: 2.0),  // Accent color on focus
+          ),
+        ),
+        style: const TextStyle(color: Colors.white),  // White text color
+        onChanged: (value) {
+          setState(() {
+            userName = value;
+          });
+        }, 
       ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10.0),
-        borderSide: BorderSide(color: Colors.white, width: 2.0),
+
+       SizedBox(height: 16.0), // Adds a gap of 16 pixels between the text fields
+
+       TextField(
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.black87,  // Dark background color
+          labelText: 'Enter Trainee Id',
+          labelStyle: const TextStyle(color: Colors.white),  // White label color
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(color: Colors.white, width: 2.0),  // White border color
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(color: Colors.white, width: 2.0),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(color: Colors.blueAccent, width: 2.0),  // Accent color on focus
+          ),
+        ),
+        style: const TextStyle(color: Colors.white),  // White text color
+        onChanged: (value) {
+          setState(() {
+            userId = value;
+          });
+        },
       ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10.0),
-        borderSide: BorderSide(color: Colors.blueAccent, width: 2.0),  // Accent color on focus
-      ),
-    ),
-    style: TextStyle(color: Colors.white),  // White text color
-    onChanged: (value) {
-      setState(() {
-        userName = value;
-      });
-    },
+    ],
   ),
+  
 ),
 
                   Card(
@@ -295,6 +331,14 @@ class _TimeRecorderScreenState extends State<TimeRecorderScreen> {
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
+                                 Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text(
+                                    'Trainee ID',
+                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
                                 Padding(
                                   padding: EdgeInsets.all(8.0),
                                   child: Text(
@@ -327,6 +371,14 @@ class _TimeRecorderScreenState extends State<TimeRecorderScreen> {
                                       padding: const EdgeInsets.all(8.0),
                                       child: Text(
                                         record['name']!,
+                                        style: const TextStyle(color: Colors.white),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        record['id']!,
                                         style: const TextStyle(color: Colors.white),
                                         textAlign: TextAlign.center,
                                       ),
