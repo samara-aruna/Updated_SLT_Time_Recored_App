@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
+import 'dart:math';
 
 void main() {
   runApp(TimeRecorderApp());
@@ -85,16 +86,35 @@ class _TimeRecorderScreenState extends State<TimeRecorderScreen> {
 
   String _formatCurrentTime() {
     final now = DateTime.now();
-    return "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}";
+    return "${_currentTime.hour.toString().padLeft(2, '0')}:${_currentTime.minute.toString().padLeft(2, '0')}:${_currentTime.second.toString().padLeft(2, '0')}";
   }
 
-  Stream<String> _clockStream() async* {
-    while (true) {
-      await Future.delayed(const Duration(seconds: 1));
-      final now = DateTime.now();
-      yield "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}";
-    }
+  // Stream<String> _clockStream() async* {
+  //   while (true) {
+  //     await Future.delayed(const Duration(seconds: 1));
+  //     final now = DateTime.now();
+  //     yield "${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}";
+  //   }
+  // }
+  DateTime _currentTime = DateTime.now();
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _currentTime = DateTime.now();
+      });
+    });
   }
+  
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +149,12 @@ class _TimeRecorderScreenState extends State<TimeRecorderScreen> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: Image.asset('assets/three.png', width: 300, height: 300),
+                    child:CustomPaint(
+          size: Size(300, 300),
+           painter: ClockPainter(_currentTime),
+           
+        ),
+                    
                   ),
                  Padding(
   padding: const EdgeInsets.all(20.0),
@@ -162,7 +187,7 @@ class _TimeRecorderScreenState extends State<TimeRecorderScreen> {
         }, 
       ),
 
-       SizedBox(height: 16.0), // Adds a gap of 16 pixels between the text fields
+       const SizedBox(height: 16.0), // Adds a gap of 16 pixels between the text fields
 
        TextField(
         decoration: InputDecoration(
@@ -214,21 +239,13 @@ class _TimeRecorderScreenState extends State<TimeRecorderScreen> {
                             ),
                           ),
                           const SizedBox(height: 15),
-                          StreamBuilder<String>(
-                            stream: _clockStream(),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                return Text(
-                                  'Current Time: ${snapshot.data}',
-                                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
-                                );
-                              } else {
-                                return const Text(
-                                  'Loading...',
-                                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
-                                );
-                              }
-                            },
+                          Text(
+                            'Time: ${_currentTime.hour.toString().padLeft(2, '0')}:${_currentTime.minute.toString().padLeft(2, '0')}:${_currentTime.second.toString().padLeft(2, '0')}',
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                         ],
                       ),
@@ -429,5 +446,123 @@ class _TimeRecorderScreenState extends State<TimeRecorderScreen> {
         ),
       ),
     );
+  }
+}
+
+class ClockPainter extends CustomPainter {
+  final DateTime time;
+
+  ClockPainter(this.time);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    double centerX = size.width / 2;
+    double centerY = size.height / 2;
+    double radius = size.width / 2;
+
+    Paint paint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 10;
+
+    // Draw clock face
+    canvas.drawCircle(Offset(centerX, centerY), radius, paint);
+
+    // Draw ticks for hours, minutes, and seconds
+    drawTicks(canvas, centerX, centerY, radius);
+
+    // Draw numbers on the clock
+    drawNumbers(canvas, centerX, centerY, radius);
+
+    // Draw hour hand
+    double hourAngle = (time.hour % 12) * 30 + (time.minute / 2); // 30 degrees per hour + extra for minutes
+    double hourX = centerX + (radius - 40) * cos((hourAngle - 90) * pi / 180);
+    double hourY = centerY + (radius - 40) * sin((hourAngle - 90) * pi / 180);
+    paint.strokeWidth = 6;
+    canvas.drawLine(Offset(centerX, centerY), Offset(hourX, hourY), paint);
+
+    // Draw minute hand
+    double minuteAngle = time.minute * 6; // 6 degrees per minute
+    double minuteX = centerX + (radius - 20) * cos((minuteAngle - 90) * pi / 180);
+    double minuteY = centerY + (radius - 20) * sin((minuteAngle - 90) * pi / 180);
+    paint.strokeWidth = 4;
+    canvas.drawLine(Offset(centerX, centerY), Offset(minuteX, minuteY), paint);
+
+    // Draw second hand
+    paint.color = Colors.red;
+    paint.strokeWidth = 2;
+    double secondAngle = time.second * 6; // 6 degrees per second
+    double secondX = centerX + (radius - 10) * cos((secondAngle - 90) * pi / 180);
+    double secondY = centerY + (radius - 10) * sin((secondAngle - 90) * pi / 180);
+    canvas.drawLine(Offset(centerX, centerY), Offset(secondX, secondY), paint);
+  }
+
+  void drawTicks(Canvas canvas, double centerX, double centerY, double radius) {
+    Paint tickPaint = Paint()
+      ..color = Colors.black
+      ..strokeWidth = 2;
+
+    // Hour ticks
+    for (int i = 0; i < 12; i++) {
+      double angle = (i * 30 - 90) * pi / 180; // 30 degrees for each hour
+      double startX = centerX + (radius - 15) * cos(angle);
+      double startY = centerY + (radius - 15) * sin(angle);
+      double endX = centerX + (radius - 25) * cos(angle);
+      double endY = centerY + (radius - 25) * sin(angle);
+      canvas.drawLine(Offset(startX, startY), Offset(endX, endY), tickPaint);
+    }
+
+    // Minute ticks
+    for (int i = 0; i < 60; i++) {
+      if (i % 5 != 0) {
+        double angle = (i * 6 - 90) * pi / 180; // 6 degrees for each minute
+        double startX = centerX + (radius - 10) * cos(angle);
+        double startY = centerY + (radius - 10) * sin(angle);
+        double endX = centerX + (radius - 15) * cos(angle);
+        double endY = centerY + (radius - 15) * sin(angle);
+        canvas.drawLine(Offset(startX, startY), Offset(endX, endY), tickPaint);
+      }
+    }
+  }
+
+  void drawNumbers(Canvas canvas, double centerX, double centerY, double radius) {
+    Paint textPaint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.fill
+      ..strokeWidth = 1;
+
+    TextStyle textStyle = TextStyle(
+      color: Colors.black,
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+    );
+
+    TextSpan textSpan;
+    TextPainter textPainter;
+
+    for (int i = 1; i <= 12; i++) {
+      double angle = (i * 30 - 90) * pi / 180; // 30 degrees for each hour
+      double x = centerX + (radius - 40) * cos(angle);
+      double y = centerY + (radius - 40) * sin(angle);
+
+      textSpan = TextSpan(
+        text: i.toString(),
+        style: textStyle,
+      );
+
+      textPainter = TextPainter(
+        text: textSpan,
+        textDirection: TextDirection.ltr,
+      );
+
+      textPainter.layout();
+      textPainter.paint(
+          canvas, Offset(x - textPainter.width / 2, y - textPainter.height / 2));
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
   }
 }
